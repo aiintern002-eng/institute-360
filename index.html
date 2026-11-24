@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Institute 360</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      color: #252823;
+      background: #ffffff;
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    .app {
+      display: flex;
+      width: 100%;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .sidebar {
+      display: flex;
+      flex: 0 0 250px;
+      flex-direction: column;
+      padding: 20px 14px;
+      background: #f5f6f3;
+      border-right: 1px solid #e6e8e3;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 0 8px 24px;
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .brand-mark {
+      display: grid;
+      width: 30px;
+      height: 30px;
+      place-items: center;
+      border-radius: 9px;
+      background: #315c48;
+      color: white;
+      font-size: 18px;
+    }
+
+    .new-chat {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #dfe2dc;
+      border-radius: 9px;
+      background: white;
+      color: #30332e;
+      text-align: left;
+    }
+
+    .new-chat:hover,
+    .history button:hover {
+      background: #e9ece7;
+    }
+
+    .side-label {
+      margin: 26px 8px 9px;
+      color: #858980;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .history {
+      display: grid;
+      gap: 4px;
+    }
+
+    .history button {
+      overflow: hidden;
+      padding: 9px 10px;
+      border: 0;
+      border-radius: 8px;
+      background: transparent;
+      color: #51554e;
+      text-align: left;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .sidebar-bottom {
+      margin-top: auto;
+      padding: 13px 8px 0;
+      border-top: 1px solid #e1e3de;
+      color: #666b63;
+      font-size: 12px;
+    }
+
+    .main {
+      display: flex;
+      min-width: 0;
+      flex: 1;
+      flex-direction: column;
+      height: 100vh;
+    }
+
+    .topbar {
+      display: flex;
+      height: 60px;
+      flex: 0 0 60px;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      border-bottom: 1px solid #eeeeeb;
+    }
+
+    .topbar-title {
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    .topbar-label {
+      color: #777c73;
+      font-size: 13px;
+    }
+
+    .chat-area {
+      display: flex;
+      min-height: 0;
+      flex: 1;
+      flex-direction: column;
+      overflow-y: auto;
+    }
+
+    .conversation {
+      width: min(800px, 100%);
+      margin: 0 auto;
+      padding: 24px 24px 35px;
+    }
+
+    .welcome {
+      display: flex;
+      min-height: min(55vh, 470px);
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+
+    .welcome-mark {
+      display: grid;
+      width: 48px;
+      height: 48px;
+      place-items: center;
+      margin-bottom: 18px;
+      border-radius: 15px;
+      background: #eaf1ec;
+      color: #315c48;
+      font-size: 25px;
+    }
+
+    .welcome h1 {
+      margin: 0 0 8px;
+      font-size: clamp(24px, 3vw, 32px);
+      letter-spacing: -0.04em;
+    }
+
+    .welcome p {
+      margin: 0;
+      color: #777c73;
+      font-size: 15px;
+    }
+
+    .suggestions {
+      display: grid;
+      width: min(620px, 100%);
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin: 0 auto 24px;
+    }
+
+    .suggestion {
+      min-height: 62px;
+      padding: 12px 14px;
+      border: 1px solid #e2e5df;
+      border-radius: 11px;
+      background: white;
+      color: #3d443e;
+      text-align: left;
+    }
+
+    .suggestion:hover {
+      border-color: #b7c8ba;
+      background: #fafcf9;
+    }
+
+    .messages {
+      display: grid;
+      gap: 22px;
+    }
+
+    .message {
+      display: flex;
+      align-items: flex-start;
+      gap: 11px;
+    }
+
+    .message.user {
+      justify-content: flex-end;
+    }
+
+    .message-avatar {
+      display: grid;
+      width: 29px;
+      height: 29px;
+      flex: 0 0 29px;
+      place-items: center;
+      border-radius: 9px;
+      background: #315c48;
+      color: white;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .message-bubble {
+      max-width: min(75%, 600px);
+      padding: 10px 14px;
+      border-radius: 14px;
+      font-size: 14px;
+      line-height: 1.6;
+      overflow-wrap: anywhere;
+    }
+
+    .message.user .message-bubble {
+      border-top-right-radius: 4px;
+      background: #eef1ed;
+    }
+
+    .message.assistant .message-bubble {
+      padding-left: 0;
+    }
+
+    .composer-area {
+      width: min(800px, 100%);
+      margin: 0 auto;
+      padding: 12px 24px 14px;
+      background: white;
+    }
+
+    .composer {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 10px 9px 16px;
+      border: 1px solid #dfe2dc;
+      border-radius: 16px;
+      background: white;
+      box-shadow: 0 3px 14px rgba(30, 40, 30, 0.06);
+    }
+
+    .composer:focus-within {
+      border-color: #aabdad;
+    }
+
+    .composer input {
+      min-width: 0;
+      flex: 1;
+      padding: 7px 0;
+      border: 0;
+      outline: 0;
+      color: #252823;
+      font-size: 14px;
+    }
+
+    .composer input::placeholder {
+      color: #92968e;
+    }
+
+    .send-button {
+      display: grid;
+      width: 36px;
+      height: 36px;
+      flex: 0 0 36px;
+      place-items: center;
+      border: 0;
+      border-radius: 10px;
+      background: #315c48;
+      color: white;
+      font-size: 18px;
+    }
+
+    .send-button:hover {
+      background: #264b38;
+    }
+
+    .send-button:disabled {
+      background: #b8c5bb;
+      cursor: default;
+    }
+
+    .disclaimer {
+      padding-top: 8px;
+      color: #92968e;
+      font-size: 10px;
+      text-align: center;
+    }
+
+    .mobile-menu {
+      display: none;
+    }
+
+    @media (max-width: 700px) {
+      .sidebar {
+        display: none;
+      }
+
+      .topbar {
+        height: 54px;
+        flex-basis: 54px;
+        padding: 0 16px;
+      }
+
+      .mobile-menu {
+        display: inline;
+        margin-right: 8px;
+        border: 0;
+        background: transparent;
+        color: #315c48;
+        font-size: 18px;
+      }
+
+      .conversation {
+        padding: 18px 16px 24px;
+      }
+
+      .welcome {
+        min-height: 42vh;
+      }
+
+      .suggestions {
+        grid-template-columns: 1fr;
+      }
+
+      .composer-area {
+        padding: 10px 12px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <span class="brand-mark">✳</span>
+        <span>Institute 360</span>
+      </div>
+
+      <button class="new-chat" id="new-chat">＋ &nbsp; New chat</button>
+
+      <div class="side-label">Recent</div>
+      <nav class="history">
+        <button type="button">Class schedule</button>
+        <button type="button">Student support</button>
+        <button type="button">Campus resources</button>
+      </nav>
+
+      <div class="sidebar-bottom">Student Support</div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div>
+          <button class="mobile-menu" type="button" aria-label="Menu">☰</button>
+          <span class="topbar-title">Institute 360</span>
+        </div>
+        <span class="topbar-label">Student Support</span>
+      </header>
+
+      <div class="chat-area" id="chat-area">
+        <section class="conversation">
+          <div class="welcome" id="welcome">
+            <div class="welcome-mark">✳</div>
+            <h1>How can we help you today?</h1>
+            <p>Ask a question or choose a suggestion below.</p>
+          </div>
+
+          <div class="suggestions" id="suggestions">
+            <button class="suggestion" type="button">
+              Where can I find my class schedule?
+            </button>
+            <button class="suggestion" type="button">
+              How do I contact student support?
+            </button>
+            <button class="suggestion" type="button">
+              Where can I find campus resources?
+            </button>
+            <button class="suggestion" type="button">
+              How do I ask about enrollment?
+            </button>
+          </div>
+
+          <div class="messages" id="messages" aria-live="polite"></div>
+        </section>
+      </div>
+
+      <div class="composer-area">
+        <form class="composer" id="chat-form">
+          <input
+            id="message-input"
+            type="text"
+            placeholder="Message Institute 360..."
+            aria-label="Type your message"
+            autocomplete="off"
+          >
+          <button class="send-button" id="send-button" type="submit" aria-label="Send" disabled>
+            ↑
+          </button>
+        </form>
+        <div class="disclaimer">Check important information with student support.</div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const form = document.querySelector("#chat-form");
+    const input = document.querySelector("#message-input");
+    const messages = document.querySelector("#messages");
+    const welcome = document.querySelector("#welcome");
+    const suggestions = document.querySelector("#suggestions");
+    const sendButton = document.querySelector("#send-button");
+    const chatArea = document.querySelector("#chat-area");
+
+    function updateSendButton() {
+      sendButton.disabled = input.value.trim() === "";
+    }
+
+    function addMessage(text, sender) {
+      const row = document.createElement("div");
+      row.className = "message " + sender;
+
+      if (sender === "assistant") {
+        const avatar = document.createElement("div");
+        avatar.className = "message-avatar";
+        avatar.textContent = "✳";
+        row.appendChild(avatar);
+      }
+
+      const bubble = document.createElement("div");
+      bubble.className = "message-bubble";
+      bubble.textContent = text;
+      row.appendChild(bubble);
+
+      if (sender === "user") {
+        const avatar = document.createElement("div");
+        avatar.className = "message-avatar";
+        avatar.textContent = "S";
+        row.appendChild(avatar);
+      }
+
+      messages.appendChild(row);
+      chatArea.scrollTop = chatArea.scrollHeight;
+    }
+
+    function sendMessage(text) {
+      const trimmedText = text.trim();
+
+      if (trimmedText === "") {
+        return;
+      }
+
+      welcome.hidden = true;
+      suggestions.hidden = true;
+
+      addMessage(trimmedText, "user");
+      input.value = "";
+      updateSendButton();
+
+      window.setTimeout(function () {
+        addMessage(
+          "Thanks for your question. Please contact student support for help with this request.",
+          "assistant"
+        );
+      }, 400);
+    }
+
+    form.addEventListener("submit", function (event) {
+      event.preventDefault();
+      sendMessage(input.value);
+      input.focus();
+    });
+
+    input.addEventListener("input", updateSendButton);
+
+    suggestions.addEventListener("click", function (event) {
+      const button = event.target.closest(".suggestion");
+
+      if (button) {
+        sendMessage(button.textContent);
+      }
+    });
+
+    document.querySelector("#new-chat").addEventListener("click", function () {
+      messages.innerHTML = "";
+      welcome.hidden = false;
+      suggestions.hidden = false;
+      input.value = "";
+      updateSendButton();
+      input.focus();
+    });
+  </script>
+</body>
+</html>
